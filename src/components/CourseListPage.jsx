@@ -27,16 +27,13 @@ export const CourseListPage = () => {
 
     useEffect(() => {
         fetchCourses();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Get unique semesters for dropdown options
     const semesters = Array.from(new Set(courses.map((c) => c.semester).filter(Boolean)));
 
-    // Filter courses based on search query and selected semester
     const filteredCourses = courses.filter((course) => {
         const matchesSemester = selectedSemester ? course.semester === selectedSemester : true;
-        
+
         const q = searchQuery.toLowerCase().trim();
         const matchesSearch =
             !q ||
@@ -46,6 +43,11 @@ export const CourseListPage = () => {
 
         return matchesSemester && matchesSearch;
     });
+
+    const handleReset = () => {
+        setSearchQuery("");
+        setSelectedSemester("");
+    };
 
     return (
         <Container fluid className="px-4">
@@ -79,8 +81,8 @@ export const CourseListPage = () => {
                     </Form.Select>
                 </Col>
                 <Col md={3} className="d-flex align-items-center gap-2">
-                    <Button variant="primary" onClick={fetchCourses} disabled={loading}>
-                        {loading ? "Refreshing..." : "Refresh"}
+                    <Button onClick={handleReset}>
+                        Reset
                     </Button>
                 </Col>
             </Row>
@@ -105,7 +107,7 @@ export const CourseListPage = () => {
                 {filteredCourses.length > 0 ? (
                     filteredCourses.map((course) => (
                         <Col key={course.id} xs={12} sm={6} md={4} lg={3}>
-                            <Card 
+                            <Card
                                 className="h-100 shadow-sm border"
                                 style={{ cursor: "pointer" }}
                                 onClick={() => navigate(`/detail/${course.id}`)}
@@ -130,7 +132,7 @@ export const CourseListPage = () => {
                                     </Card.Text>
                                     <div>
                                         <Button
-                                            variant="outline-primary"
+                                            variant="primary"
                                             size="sm"
                                             onClick={(e) => {
                                                 e.stopPropagation();

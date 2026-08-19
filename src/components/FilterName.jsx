@@ -1,10 +1,20 @@
-import { Badge, Button, Col, Container, Row } from "react-bootstrap"
-import { Card } from "react-bootstrap"
-import { useState } from "react"
-import { useSearchParams } from "react-router-dom"
-import { Form } from "react-bootstrap"
+import { Button, Col, Container, Row, Form } from "react-bootstrap";
+import { useState } from "react";
+
 export const FilterName = ({ handleFilter }) => {
-    // const [searchParams, setSearchParams] = useSearchParams();
+    const [inputVal, setInputVal] = useState("");
+
+    const handleChange = (e) => {
+        const val = e.target.value;
+        setInputVal(val);
+        if (handleFilter) handleFilter({ input: val });
+    };
+
+    const handleReset = () => {
+        setInputVal("");
+        if (handleFilter) handleFilter({ input: "" });
+    };
+
     return (
         <Container className="">
             <Row>
@@ -14,29 +24,26 @@ export const FilterName = ({ handleFilter }) => {
                 <h1>My Courses</h1>
             </Row>
             <Row>
-                <Col md={8}>
+                <Col md={7}>
                     <Form>
-                        <Form.Control placeholder="Search Course" onChange={(e) => {
-                            handleFilter({ input: e.target.value })
-                        }} />
+                        <Form.Control
+                            placeholder="Search Course"
+                            value={inputVal}
+                            onChange={handleChange}
+                        />
                     </Form>
                 </Col>
-                <Col md={2}>
-                    <Form.Select onChange={(e) => {
-                        // setSearchParams({
-                        //     semester: e.target.value
-                        // })
-                    }}>
+                <Col md={3}>
+                    <Form.Select onChange={(e) => {}}>
                         <option value="">Summer 2026</option>
                         <option value="ACTIVE">Spring 2026</option>
                         <option value="INACTIVE">Fall 2026</option>
                     </Form.Select>
                 </Col>
-                {/* <Col md={2}>
-                    <Button onClick={handleFilter({ input: '' })}>Reset</Button>
-                </Col> */}
+                <Col md={2}>
+                    <Button variant="secondary" onClick={handleReset}>Reset</Button>
+                </Col>
             </Row>
-
         </Container>
-    )
-}
+    );
+};

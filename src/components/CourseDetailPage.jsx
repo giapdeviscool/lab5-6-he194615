@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button, Badge, Card, ListGroup, Alert } from "react-bootstrap";
 import api from "../api";
 
@@ -41,7 +41,6 @@ export const CourseDetailPage = () => {
 
     useEffect(() => {
         fetchCourseDetail();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     if (loading) {
@@ -63,17 +62,14 @@ export const CourseDetailPage = () => {
         );
     }
 
-    // Active class object
     const activeClass = course.classes?.find(
         (c) => (c.classId || c.name) === activeClassId
     ) || course.classes?.[0];
 
-    // Active slot object
     const activeSlot = activeClass?.slots?.find(
         (s) => s.slotNumber === activeSlotNumber
     ) || activeClass?.slots?.[0];
 
-    // Helper: Handle switching class
     const handleSelectClass = (cls) => {
         const clsId = cls.classId || cls.name;
         setActiveClassId(clsId);
@@ -85,7 +81,6 @@ export const CourseDetailPage = () => {
         }
     };
 
-    // Helper: Check if slot date is in present or future
     const isSlotInPresentOrFuture = (dateStr) => {
         if (!dateStr) return false;
         const parts = dateStr.split("/");
@@ -103,7 +98,6 @@ export const CourseDetailPage = () => {
         return false;
     };
 
-    // Helper: Toggle Class Status (OPEN / CLOSED or active / inactive)
     const handleToggleStatus = async () => {
         if (!activeClass) return;
         setValidationError("");
@@ -111,8 +105,6 @@ export const CourseDetailPage = () => {
         const currentStatus = (activeClass.status || "active").toLowerCase();
         const isCurrentlyOpen = currentStatus === "active" || currentStatus === "open";
 
-        // Validation rule: If class has any slots scheduled in present or future,
-        // system MUST NOT allow changing status to Closed and must display error message
         if (isCurrentlyOpen) {
             const hasPresentOrFutureSlots = activeClass.slots?.some((slot) =>
                 isSlotInPresentOrFuture(slot.date)
@@ -126,7 +118,6 @@ export const CourseDetailPage = () => {
             }
         }
 
-        // Toggle status
         const newStatus = isCurrentlyOpen ? "inactive" : "active";
 
         const updatedClasses = course.classes.map((c) => {
@@ -147,7 +138,6 @@ export const CourseDetailPage = () => {
         }
     };
 
-    // Helper: Delete questions from selected slot / active class
     const handleDeleteQuestions = async () => {
         if (!activeClass || !activeSlot) return;
 
@@ -189,57 +179,20 @@ export const CourseDetailPage = () => {
         (activeClass?.status || "active").toLowerCase() === "active" ||
         (activeClass?.status || "active").toLowerCase() === "open";
 
-    // Combine questions and assignments list for selected slot
     const slotQuestions = activeSlot
         ? activeSlot.questions || activeSlot.assignments || []
         : [];
 
     return (
         <Container fluid className="px-4">
-            {/* Breadcrumb */}
-            <Row className="mb-2">
-                <Col>
-                    <div className="text-muted small">
-                        <Link to="/courses" className="text-decoration-none text-secondary">
-                            My Courses
-                        </Link>{" "}
-                        &gt; {course.nameEn}
-                    </div>
-                </Col>
-            </Row>
-
-            {/* Course Title Header */}
-            <Row className="mb-3 align-items-center">
-                <Col md={8}>
+            <Row className="mb-3">
+                <Col xs={12}>
                     <h3 className="fw-bold mb-1">
                         {course.nameEn}_{course.nameVi}
                     </h3>
-                    <div className="d-flex align-items-center gap-2 text-muted">
-                        <Badge bg="secondary">{course.code}</Badge>
-                        <span>Class: <strong>{activeClass?.name || activeClass?.classId}</strong></span>
-                        <Badge bg={isClassOpen ? "success" : "danger"}>
-                            {isClassOpen ? "OPEN" : "CLOSED"}
-                        </Badge>
-                    </div>
-                </Col>
-                <Col md={4} className="d-flex justify-content-end gap-2 mt-2 mt-md-0">
-                    <Button variant="secondary" size="sm" onClick={() => navigate("/courses")}>
-                        Back
-                    </Button>
-                    <Button variant="danger" size="sm" onClick={handleDeleteQuestions}>
-                        Delete questions
-                    </Button>
-                    <Button
-                        variant={isClassOpen ? "warning" : "success"}
-                        size="sm"
-                        onClick={handleToggleStatus}
-                    >
-                        {isClassOpen ? "Close Class" : "Open Class"}
-                    </Button>
                 </Col>
             </Row>
 
-            {/* Validation Error Alert */}
             {validationError && (
                 <Row className="mb-3">
                     <Col>
@@ -254,11 +207,8 @@ export const CourseDetailPage = () => {
                 </Row>
             )}
 
-            {/* Main Content Layout */}
             <Row className="g-3">
-                {/* Left Sidebar: Classes & Slots */}
                 <Col md={4} lg={3}>
-                    {/* Classes Section */}
                     <Card className="mb-3 border">
                         <Card.Header className="fw-bold bg-light">Classes</Card.Header>
                         <ListGroup variant="flush">
@@ -274,11 +224,11 @@ export const CourseDetailPage = () => {
                                         className="d-flex justify-content-between align-items-center"
                                         style={{ cursor: "pointer" }}
                                     >
-                                        <span>• {cls.name || cls.classId}</span>
+                                        <span>{cls.name || cls.classId}</span>
                                         <Badge
                                             bg={
                                                 (cls.status || "active").toLowerCase() === "active" ||
-                                                (cls.status || "active").toLowerCase() === "open"
+                                                    (cls.status || "active").toLowerCase() === "open"
                                                     ? "success"
                                                     : "secondary"
                                             }
@@ -292,10 +242,9 @@ export const CourseDetailPage = () => {
                         </ListGroup>
                     </Card>
 
-                    {/* Slots Section */}
                     <Card className="border">
                         <Card.Header className="fw-bold bg-light">Slots</Card.Header>
-                        <ListGroup variant="flush" style={{ maxHeight: "350px", overflowY: "auto" }}>
+                        <ListGroup variant="flush">
                             {activeClass?.slots && activeClass.slots.length > 0 ? (
                                 activeClass.slots.map((slot) => {
                                     const isSelected = slot.slotNumber === activeSlotNumber;
@@ -325,16 +274,15 @@ export const CourseDetailPage = () => {
                     </Card>
                 </Col>
 
-                {/* Right Area: Class Sessions Content */}
                 <Col md={8} lg={9}>
                     <Card className="border p-3">
                         <h4 className="fw-bold mb-3">Class sessions</h4>
 
                         {activeSlot ? (
                             <div>
-                                <div className="p-3 bg-light border rounded mb-3">
+                                <Card className="p-3 bg-light border rounded mb-3">
                                     <div className="d-flex align-items-center gap-2 mb-2">
-                                        <Badge bg="primary" className="fs-6 px-3 py-2">
+                                        <Badge bg="dark" className="fs-6 px-3 py-2">
                                             {activeSlot.slotNumber}
                                         </Badge>
                                         <h5 className="mb-0 fw-bold">{activeSlot.title}</h5>
@@ -342,20 +290,19 @@ export const CourseDetailPage = () => {
                                     <p className="text-muted mb-1">
                                         <strong>Date & Time:</strong> {activeSlot.date} {activeSlot.time}
                                     </p>
-                                    
-                                    {/* Slot status display */}
-                                    <div className="mt-2 small text-secondary">
+
+                                    <div className="mt-2 small text-dark fw-bold">
                                         {!isSlotInPresentOrFuture(activeSlot.date) ? (
-                                            <span className="text-success fw-bold">
-                                                ✓ Constructive slot check (Slot has expired)
+                                            <span>
+                                                Constructive slot check (Slot has expired)
                                             </span>
                                         ) : (
-                                            <span className="text-info fw-bold">
+                                            <span>
                                                 Upcoming / In-progress slot
                                             </span>
                                         )}
                                     </div>
-                                </div>
+                                </Card>
 
                                 <h5 className="fw-bold mb-2">Questions / Assignments</h5>
                                 {slotQuestions.length > 0 ? (
