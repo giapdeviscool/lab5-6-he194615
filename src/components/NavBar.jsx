@@ -1,29 +1,39 @@
-import { Badge, Button, Col, Container, Nav, Row } from "react-bootstrap"
-import { Card } from "react-bootstrap"
-import { useState } from "react"
-import { useSearchParams } from "react-router-dom"
-import { Form } from "react-bootstrap"
-export const NavBar = ({ handleFilter }) => {
+import { Container, Nav } from "react-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
+
+export const NavBar = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
 
     return (
-        <Container className="border rounded-4 p-4">
-            <Nav className="d-flex gap-4">
+        <Container fluid className="border rounded p-3 mb-3 bg-light">
+            <Nav variant="pills" activeKey={location.pathname.startsWith('/courses') || location.pathname.startsWith('/detail') ? '/courses' : ''}>
                 <Nav.Item>
-                    Courses
+                    <Nav.Link onClick={() => navigate('/courses')} eventKey="/courses">
+                        Courses
+                    </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    Projects
+                    <Nav.Link disabled eventKey="/projects">
+                        Projects
+                    </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    Review
+                    <Nav.Link disabled eventKey="/review">
+                        Review
+                    </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    Title Confirmation
+                    <Nav.Link disabled eventKey="/title-confirmation">
+                        Title Confirmation
+                    </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    Reference
+                    <Nav.Link disabled eventKey="/reference">
+                        Reference
+                    </Nav.Link>
                 </Nav.Item>
             </Nav>
         </Container>
-    )
-}
+    );
+};

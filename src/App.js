@@ -1,36 +1,24 @@
-import { useEffect, useState } from "react";
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Container, Stack } from "react-bootstrap";
-import api from "./api";
-import { CourseListPage, ProjectList } from "./components/CourseListPage";
-import { FilterName } from "./components/FilterName";
 import { NavBar } from "./components/NavBar";
-function App() {
-    const [courses, setCourses] = useState([]);
-    const [filter, setFilter] = useState({
-        input: ''
-    })
+import { CourseListPage } from "./components/CourseListPage";
+import { CourseDetailPage } from "./components/CourseDetailPage";
 
-    const handleFilter = (op) => {
-        setFilter(prev => ({
-            ...prev, ...op
-        }))
-    }
-    useEffect(() => {
-        const fetchP = async () => {
-            const data = await api.get('/courses');
-            setCourses(data.data);
-        };
-        fetchP();
-    }, [])
+function App() {
     return (
-        <Container fluid>
-            <Stack gap={3} className="p-4">
+        <Container fluid className="p-3">
+            <Stack gap={3}>
                 <NavBar />
-                <FilterName handleFilter={handleFilter} />
-                <CourseListPage courses={courses} filter={filter} />
+                <Routes>
+                    <Route path="/" element={<Navigate to="/courses" replace />} />
+                    <Route path="/courses" element={<CourseListPage />} />
+                    <Route path="/detail/:id" element={<CourseDetailPage />} />
+                    <Route path="*" element={<Navigate to="/courses" replace />} />
+                </Routes>
             </Stack>
         </Container>
-    )
+    );
 }
 
 export default App;
